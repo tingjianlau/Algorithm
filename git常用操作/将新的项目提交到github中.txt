@@ -1,0 +1,8 @@
+0.在github官网中新建制定的仓库
+1.删除原有的.git配置(注意保留.gitignore): rm -rf .git
+2.初始化: git init
+3.添加所有的文件: git add .
+4.提交所有的更新: git commit -m "first commit"
+5.连接远程仓库: git remote add origin https://tingjianlau@github.com/tingjianlau/my_project.git
+6.第一次推送更新（需要输入密码）: git push -u origin master
+7.之后推送更新: git push origin master
