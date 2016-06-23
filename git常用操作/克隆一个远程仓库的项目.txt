@@ -1,0 +1,5 @@
+直接键入命令：
+git clone https://github.com/tingjianlau/project-name.git
+
+结果：
+会在当前目录下创建一个名为project-name的文件夹，内含所有项目文件，包括原有的git配置文件
