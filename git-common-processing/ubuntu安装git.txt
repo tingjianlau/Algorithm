@@ -1,0 +1,4 @@
+1. 运行命令: sudo apt-get install git
+2. 安装完成后设置相关参数:
+    2.1 git config --global user.name "Your name"
+    2.2 git config --global user.email "Your email"
