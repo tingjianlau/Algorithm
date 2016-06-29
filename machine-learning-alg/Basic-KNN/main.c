@@ -1,31 +1,33 @@
-#define	 _CRT_SECURE_NO_WARNINGS
+/*************************************************************************
+	> File Name: main.c
+	> Author: Tingjian Lau
+	> Mail: tjliu@mail.ustc.edu.cn
+	> Created Time: 2016/06/29
+	> Detail: 简易K近邻算法的实现
+ ************************************************************************/
+
 #include <stdlib.h>
 #include <stdio.h>
 #include <malloc.h>
 #include "struct.h"
 #include <string.h>
-/**************************
-全局变量
-***************************/
-struct SAMPLE_ST* trainSet;
-//struct SAMPLE_ST* testSet;
 
 /**************************
 函数原型
 ***************************/
-void	loadData(const char*, int);
+void	loadData(const char*, int, struct SAMPLE_ST*);
 
 
 int main() {
-	int	i, j, k, label, errCnt = 0;
+	int	i, j, k, kk, label, errCnt = 0;
 	struct SAMPLE_ST curTest;
 	struct SAMPLE_ST* tempSet = (struct SAMPLE_ST*)calloc(TRAIN_CNT - 1, sizeof(struct SAMPLE_ST));
-	trainSet = (struct SAMPLE_ST*)calloc(TRAIN_CNT, sizeof(struct SAMPLE_ST));
-	//testSet = (struct SAMPLE_ST*)calloc(TEST_CNT, sizeof(struct SAMPLE_ST));
+	struct SAMPLE_ST* trainSet = (struct SAMPLE_ST*)calloc(TRAIN_CNT, sizeof(struct SAMPLE_ST));
 
 	// 加载训练和测试样本数据
-	loadData(TRAIN_PATH, TRAIN_CNT);
+	loadData(TRAIN_PATH, TRAIN_CNT, trainSet);
 
+	// 留一法
 	for ( i = 0; i < TRAIN_CNT; i++)
 	{
 		curTest = trainSet[i];
@@ -38,17 +40,19 @@ int main() {
 				
 			}
 		}
-		label = knnClassifier(K, tempSet, TRAIN_CNT - 1, curTest, CLASS_CNT, FEATURE_CNT);
-		//printf("\n");
+		label = basicKnnClassifier(K, tempSet, TRAIN_CNT - 1, curTest, CLASS_CNT, FEATURE_CNT);
 		if (label != curTest.iClass)
 		{
-			printf("error%d    ", i);
+			printf("error->%d    ", i);
 			errCnt++;
 		}
 	}
-	printf("\n测试样本总数:%d, 错误个数:%d, 错误率:%lf \n", TEST_CNT, errCnt, errCnt / (TEST_CNT*1.0));
+
+    printf("\nWhen the value of K is %d:\n", K);
+	printf("Total Test Samples:%d, Error count:%d, Error Rate:%lf \n", TEST_CNT, errCnt, errCnt / (TEST_CNT*1.0));
 
 	free(trainSet);
+	free(tempSet);
 	return 0;
 }
 
@@ -56,17 +60,15 @@ int main() {
 加载训练和测试样本
 param trainSrc	训练样本文件路径
 param trainCnt	训练样本个数
-param testSrc	测试样本文件路径
-param testCnt	测试样本文件路径
 ***************************/
-void	loadData(const char* trainSrc, int trainCnt) {
+void	loadData(const char* trainSrc, int trainCnt, struct SAMPLE_ST* trainSet) {
 	int	i, j;
-	char	className[20];
+	char	className[20]; 
 	FILE	*fpTrain = NULL;
 
 	if ((fpTrain = fopen(trainSrc, "r")) == NULL)
 	{
-		printf("open file \"%s failed! \n", trainSrc);
+		printf("open file %s failed! \n", trainSrc);
 		exit(0);
 	}
 
@@ -77,7 +79,7 @@ void	loadData(const char* trainSrc, int trainCnt) {
 		{
 			fscanf(fpTrain, "%lf,", &trainSet[i].fv[j]);
 		}
-		fscanf(fpTrain, "%s", &className);
+		fscanf(fpTrain, "%s", className);
 		if (strcmp(className, "Iris-setosa") == 0)
 		{
 			trainSet[i].iClass = 0;

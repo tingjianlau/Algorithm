@@ -1,4 +1,3 @@
-#define	 _CRT_SECURE_NO_WARNINGS
 #include <stdlib.h>
 #include <stdio.h>
 #include "struct.h"
@@ -7,28 +6,25 @@
 函数原型
 ***************************/
 double*		caculateDistance(struct SAMPLE_ST* trainSet, int trainCnt, struct SAMPLE_ST curTest, int featrueCnt);
-double*		getNearestSet(int k, double* distance, int*, int trainCnt);
-void		quickSort(double* A, int p, int r, int*);
-int			getExtremumIndex(const int nums[], int numsSize, int mode);
-int	decisionRule(int k, int* indexList, struct SAMPLE_ST* trainSet, int trainCnt, int classCnt);
+void    getNearestSet(int k, double* distance, int*, int trainCnt);
+void    quickSort(double* A, int p, int r, int*);
+int		getExtremumIndex(const int nums[], int numsSize, int mode);
+int	    decisionRule(int k, int* indexList, struct SAMPLE_ST* trainSet, int trainCnt, int classCnt);
 /**************************
 KNN分类器
 ***************************/
-int knnClassifier(int k, struct SAMPLE_ST* trainSet, int trainCnt, struct SAMPLE_ST curTest, int classCnt, int featrueCnt) {
+int basicKnnClassifier(int k, struct SAMPLE_ST* trainSet, int trainCnt, struct SAMPLE_ST curTest, int classCnt, int featrueCnt) {
 	int i, j, g, f;
 	double*	distanceSet = NULL;
 	double* nearestSet = NULL;
 	int* indexList = (int*)malloc(trainCnt*sizeof(int));
-	//double* tempDis = (double*)calloc(trainCnt, sizeof(double));
 	double temp = 0;
 	int	isClass;
 	int errCnt = 0;
 	// 循环每个测试样例
-	//for (i = 0; i < testCnt; i++)
-	//{
 	for (j = 0; j < trainCnt; j++)
 	{
-		indexList[j] = j;
+		indexList[j] = j;   // 用于跟踪记录排序后的原始训练集合的索引
 	}
 
 	distanceSet = caculateDistance(trainSet, trainCnt, curTest, featrueCnt);
@@ -41,34 +37,8 @@ int knnClassifier(int k, struct SAMPLE_ST* trainSet, int trainCnt, struct SAMPLE
 		printf("%lf ", distanceSet[i]);
 
 	}*/
-	nearestSet = getNearestSet(k, distanceSet, indexList, trainCnt);
+	getNearestSet(k, distanceSet, indexList, trainCnt);
 	isClass = decisionRule(k, indexList, trainSet, trainCnt, classCnt);
-
-	/*for ( i = 0; i < 1; i++)
-	{
-		printf("%d ", indexList[i]);
-	}
-	for ( i = 0; i < 149; i++)
-	{
-		printf("=%lf ", trainSet[i].fv[0]);
-	}*/
-	/*for ( i = 0; i < 149; i++)
-	{*/
-		/*for (j = 0; j < 4; j++)
-		{
-			temp += (trainSet[indexList[0]].fv[j] - curTest.fv[j]) * (trainSet[indexList[0]].fv[j] - curTest.fv[j]);
-		}
-		printf("====%lf+++++++ \n", temp);*/
-	//}
-	
-	//if (isClass != curTest[i].iClass)
-	//{
-	//	//printf("%d    ", i);
-	//	errCnt++;
-	//}
-	//}
-
-	//printf("测试样本总数:%d, 错误个数:%d, 错误率:%lf \n", testCnt, errCnt, errCnt / (testCnt*1.0));
 
 	free(indexList);
 	free(distanceSet);
@@ -99,30 +69,10 @@ double*	caculateDistance(struct SAMPLE_ST* trainSet, int trainCnt, struct SAMPLE
 
 /**************************
 选择离测试样例最近的k个训练样本的集合
+indexList的前k个元素即为要求子集在原始训练集合中的索引
 ***************************/
-double*	getNearestSet(int k, double* distance, int* indexList, int trainCnt) {
-	int	i;
-	double* nearestSet = (double*)malloc(k*sizeof(double));
-
-	quickSort(distance, 0, trainCnt - 1, indexList);
-	
-	/*for ( i = 0; i < trainCnt; i++)
-	{
-		if (i % 5 == 0)
-		{
-			printf("\n");
-		}
-		printf("%lf ", distance[i]);
-		
-	}*/
-	/*printf("\n");
-	for (i = 0; i < k; i++)
-	{
-		nearestSet[i] = distance[i];
-		printf("***%lf**** ", nearestSet[i]);
-	}
-	printf("\n");*/
-	return nearestSet;
+void    getNearestSet(int k, double* distanceSet, int* indexList, int trainCnt) {
+	quickSort(distanceSet, 0, trainCnt - 1, indexList);
 }
 
 /**************************
